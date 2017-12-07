@@ -76,9 +76,7 @@
           "properties": {
             "appSettings": [
               {
-                "name": "someAppSetting",
-                "value": "[parameters('someAppSetting')]"
-              }
+                              }
             ]
           }
         },
