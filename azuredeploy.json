@@ -30,6 +30,10 @@
       ],
       "defaultValue": "0"
     },
+    "testParameter": {
+      "type": "string",
+      "defaultValue": "Test App Setting Value"
+    },
     "repoUrl": {
       "type": "string"
     },
@@ -73,7 +77,14 @@
           "dependsOn": [
             "[concat('Microsoft.Web/Sites/', parameters('siteName'))]"
           ],
-          
+          "properties": {
+            "appSettings": [
+              {
+                "name": "testParameter",
+                "value": "[parameters('testParameter')]"
+              }
+            ]
+          }
         },
         {
           "apiVersion": "2014-04-01",
