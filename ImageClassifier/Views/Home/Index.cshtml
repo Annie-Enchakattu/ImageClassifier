@@ -1,0 +1,104 @@
+﻿<div class="row text-center text-lg-left" id="sample-images" style="display:none">
+</div>
+<div class="row text-center text-lg-left" id="prediction-result" style="display:none">
+</div>
+<!-- Modal -->
+<div id="predictionModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Top 5 Predictions</h4>
+            </div>
+            <div class="modal-body" >
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        GetSampleImages(0);
+        $("#predictionModal").draggable({ handle: ".modal-header" });
+
+    });
+
+    function GetSampleImages(startIndex) {
+        $("#sample-images").show();
+        $("#prediction-result").hide();
+
+        $.ajax({
+            url: '/api/sampleimages',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                startIndex: startIndex,
+            },
+            success: function (data) {
+                LoadSampleImages(data);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('An error occurred while retrieving sample images');
+            }
+        });
+    }
+    function LoadSampleImages(imageData) {
+
+        for (var i = 0; i < imageData.length; i++) {
+            CreateImageGalleryHtml();
+            $('.img-added').attr('src', imageData[i].URL);
+            $('.img-added').removeClass('img-added');
+            $('.species-name-added').html(imageData[i].Name);
+            $('.species-name-added').removeClass('species-name-added');
+        }
+    }
+    function CreateImageGalleryHtml() {
+
+        var html = '<div class="col-lg-3 col-md-4 col-xs-6 image-top-container"> ' +
+            '<div class="image-container"> ' +
+            '<a href= "#" class="d-block mb-4 h-100" > ' +
+            '<img class="img-fluid img-thumbnail img-added" src="http://placehold.it/400x300" alt="" /> ' +
+            '<h5 class="species-name-added"></h5>' +
+            '</a >' +
+            '<button type= "button" onclick="predict(this)" class="btn btn-predict" style= "font-size:9pt">Predict</button > ' +
+            '</div ></div>';
+
+        $("#sample-images").append(html);
+    }
+    function predict(element) {
+
+        var imagePath = $(element).prev().children().attr('src');
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/sampleImages',
+            data: JSON.stringify(imagePath),
+            success: function (data)
+            {
+                LoadPredictions(data);
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        });
+    }
+    function LoadPredictions(data)
+    {
+        var html = '<table id="prediction-table">';
+                    
+        for (var i = 0; i < data.length; i++)
+        {
+            html += '<tr><td>' + data[i].Tag + '</td>' +
+                    '<td><div class="bar" style="max-width:' + data[i].PercentageProbability + '%;">' + data[i].PercentageProbability + '</div></td>' +
+                    '<td>' + data[i].PercentageProbability + '%</tr > ';
+        }
+
+        html += "</table>";
+
+        $(".modal-body").html(html);
+        $("#predictionModal").modal();
+    }
+</script>
