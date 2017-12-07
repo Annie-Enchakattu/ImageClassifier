@@ -73,12 +73,7 @@
           "dependsOn": [
             "[concat('Microsoft.Web/Sites/', parameters('siteName'))]"
           ],
-          "properties": {
-            "appSettings": [
-              {
-                              }
-            ]
-          }
+          
         },
         {
           "apiVersion": "2014-04-01",
