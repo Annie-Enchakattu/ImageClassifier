@@ -33,6 +33,9 @@ namespace ImageClassifier.Controllers
         }
         public List<PredictionData> Post([FromBody]string value)
         {
+            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-predictionKey"];
+            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-projectId"]);
+            
             List<PredictionData> error = new List<PredictionData>();
             try
             {
@@ -41,8 +44,8 @@ namespace ImageClassifier.Controllers
             catch(Exception ex)
             {
                 var p = new PredictionData();
-                p.Tag = "error" + ex.ToString();
-                p.PercentageProbability = "0";
+                p.Tag = "error" + ex.Message +"<br/>" + "projectId: " +  projectId;
+                p.PercentageProbability = predictionKey;
                 p.Probability = 0;
                 error.Add(p);
                 return error;
