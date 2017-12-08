@@ -86,7 +86,7 @@
               {
                 "name": "predictionKey",
                 "value": "[parameters('predictionKey')]"
-              }
+              },
                {
                 "name": "projectId",
                 "value": "[parameters('projectId')]"
