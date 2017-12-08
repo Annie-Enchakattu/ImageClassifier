@@ -34,6 +34,10 @@
       "type": "string",
       "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
     },
+    "projectId" :{
+      "type": "string",
+      "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
+    },
     "repoUrl": {
       "type": "string"
     },
@@ -81,7 +85,9 @@
             "appSettings": [
               {
                 "name": "predictionKey",
-                "value": "[parameters('predictionKey')]"
+                "value": "[parameters('predictionKey')]",
+                "name" : "projectId",
+                "value": "[parameters('projectId')]"
               }
             ]
           }
