@@ -98,12 +98,16 @@ namespace ImageClassifier.Controllers
 
         private static List<PredictionData> PredictImage(string path)
         {
-            PredictionEndpointCredentials predictionEndpointCredentials = new PredictionEndpointCredentials("65d6c49a72a14c0fb068ea8f30218e26");
+            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["predictionKey"];
+            //var predictionKey = "65d6c49a72a14c0fb068ea8f30218e26";
+            PredictionEndpointCredentials predictionEndpointCredentials = new PredictionEndpointCredentials(predictionKey);
             PredictionEndpoint endpoint = new PredictionEndpoint(predictionEndpointCredentials);
 
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
-            var projectId = new Guid("faf45e97-218b-418c-8dc0-641e7ba3f535");
+            //var projectId = new Guid("faf45e97-218b-418c-8dc0-641e7ba3f535");
+            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["projectId"]);
+
             var result = endpoint.PredictImage(projectId, fileStream);
 
             var predictionDataList = new List<PredictionData>();

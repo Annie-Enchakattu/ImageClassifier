@@ -23,7 +23,7 @@
 <script>
     $(document).ready(function () {
         GetSampleImages(0);
-        $("#predictionModal").draggable({ handle: ".modal-header" });
+        //$("#predictionModal").draggable({ handle: ".modal-header" });
 
     });
 
@@ -100,5 +100,8 @@
 
         $(".modal-body").html(html);
         $("#predictionModal").modal();
+        $('#predictionModal').css('height', 420);
+        //$('.modal-body').css('height', 420);
+        //$('#predictionModal').css('top', 0);
     }
 </script>
