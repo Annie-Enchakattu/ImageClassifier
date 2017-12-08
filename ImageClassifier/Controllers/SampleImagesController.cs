@@ -33,7 +33,20 @@ namespace ImageClassifier.Controllers
         }
         public List<PredictionData> Post([FromBody]string value)
         {
-            return PredictImage(System.Web.HttpContext.Current.Server.MapPath(value));
+            List<PredictionData> error = new List<PredictionData>();
+            try
+            {
+                return PredictImage(System.Web.HttpContext.Current.Server.MapPath(value));
+            }
+            catch(Exception ex)
+            {
+                var p = new PredictionData();
+                p.Tag = "error" + ex.ToString();
+                p.PercentageProbability = "0";
+                p.Probability = 0;
+                error.Add(p);
+                return error;
+            }
         }
         
         private List<string> GetImages()
