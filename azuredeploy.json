@@ -30,9 +30,13 @@
       ],
       "defaultValue": "0"
     },
-    "testParameter": {
+    "predictionKey": {
       "type": "string",
-      "defaultValue": "Test App Setting Value"
+      "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
+    },
+    "projectId": {
+      "type": "string",
+      "defaultValue": "faf45e97-218b-418c-8dc0-641e7ba3f535"
     },
     "repoUrl": {
       "type": "string"
@@ -80,8 +84,12 @@
           "properties": {
             "appSettings": [
               {
-                "name": "testParameter",
-                "value": "[parameters('testParameter')]"
+                "name": "predictionKey",
+                "value": "[parameters('predictionKey')]"
+              }
+               {
+                "name": "projectId",
+                "value": "[parameters('projectId')]"
               }
             ]
           }
