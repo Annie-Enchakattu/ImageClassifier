@@ -34,7 +34,7 @@ namespace ImageClassifier.Controllers
         public List<PredictionData> Post([FromBody]string value)
         {
             var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-PredictionKey"];
-            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-projectId"]);
+            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-ProjectId"]);
             
             List<PredictionData> error = new List<PredictionData>();
             try
@@ -122,7 +122,7 @@ namespace ImageClassifier.Controllers
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
             //var projectId = new Guid("faf45e97-218b-418c-8dc0-641e7ba3f535");
-            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-projectId"]);
+            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-ProjectId"]);
 
             var result = endpoint.PredictImage(projectId, fileStream);
 
