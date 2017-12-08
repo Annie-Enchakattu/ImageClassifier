@@ -33,7 +33,7 @@ namespace ImageClassifier.Controllers
         }
         public List<PredictionData> Post([FromBody]string value)
         {
-            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-predictionKey"];
+            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-PredictionKey"];
             var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-projectId"]);
             
             List<PredictionData> error = new List<PredictionData>();
@@ -114,7 +114,7 @@ namespace ImageClassifier.Controllers
 
         private static List<PredictionData> PredictImage(string path)
         {
-            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-predictionKey"];
+            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-PredictionKey"];
             //var predictionKey = "65d6c49a72a14c0fb068ea8f30218e26";
             PredictionEndpointCredentials predictionEndpointCredentials = new PredictionEndpointCredentials(predictionKey);
             PredictionEndpoint endpoint = new PredictionEndpoint(predictionEndpointCredentials);
