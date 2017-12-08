@@ -84,9 +84,9 @@
           "properties": {
             "appSettings": [
               {
-                "name": "CustomVisionAI-predictionKey",
+                "name": "CustomVisionAI-PredictionKey",
                 "value": "[parameters('CustomVisionAI-PredictionKey')]",
-                "name" : "CustomVisionAI-projectId",
+                "name" : "CustomVisionAI-ProjectId",
                 "value": "[parameters('CustomVisionAI-ProjectId')]"
               }
             ]
