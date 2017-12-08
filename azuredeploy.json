@@ -30,9 +30,9 @@
       ],
       "defaultValue": "0"
     },
-    "predictionKey": {
+    "someAppSetting": {
       "type": "string",
-      "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
+      "defaultValue": "Test App Setting Value"
     },
     "repoUrl": {
       "type": "string"
@@ -80,8 +80,8 @@
           "properties": {
             "appSettings": [
               {
-                "name": "predictionKey",
-                "value": "[parameters('predictionKey')]"
+                "name": "someAppSetting",
+                "value": "[parameters('someAppSetting')]"
               }
             ]
           }
