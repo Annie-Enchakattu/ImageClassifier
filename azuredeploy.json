@@ -32,7 +32,7 @@
     },
     "predictionKey": {
       "type": "string",
-      "defaultValue": "test"
+      "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
     },
     "repoUrl": {
       "type": "string"
