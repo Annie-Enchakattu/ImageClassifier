@@ -34,7 +34,7 @@
       "type": "string",
       "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
     },
-    "CustomVisionAI-projectId" :{
+    "CustomVisionAI-ProjectId" :{
       "type": "string",
       "defaultValue": "faf45e97-218b-418c-8dc0-641e7ba3f535"
     },
@@ -85,9 +85,9 @@
             "appSettings": [
               {
                 "name": "CustomVisionAI-predictionKey",
-                "value": "[parameters('CustomVisionAI-predictionKey')]",
+                "value": "[parameters('CustomVisionAI-PredictionKey')]",
                 "name" : "CustomVisionAI-projectId",
-                "value": "[parameters('CustomVisionAI-projectId')]"
+                "value": "[parameters('CustomVisionAI-ProjectId')]"
               }
             ]
           }
