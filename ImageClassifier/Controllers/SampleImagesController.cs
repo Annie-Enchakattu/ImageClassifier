@@ -44,7 +44,7 @@ namespace ImageClassifier.Controllers
             catch(Exception ex)
             {
                 var p = new PredictionData();
-                p.Tag = "error" + ex.Message +"<br/>" + "projectId: " +  projectId;
+                p.Tag = "error" + ex.Message +"<br/>" + "projectId: " +  projectId + "<br/>" + predictionKey;
                 p.PercentageProbability = predictionKey;
                 p.Probability = 0;
                 error.Add(p);
