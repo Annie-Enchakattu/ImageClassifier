@@ -32,11 +32,11 @@
     },
     "CustomVisionAI-PredictionKey": {
       "type": "string",
-      "defaultValue": "65d6c49a72a14c0fb068ea8f30218e26"
+      "defaultValue": "61d1a22185634ef9a36b3edb237f1f39"
     },
     "CustomVisionAI-ProjectId" :{
       "type": "string",
-      "defaultValue": "faf45e97-218b-418c-8dc0-641e7ba3f535"
+      "defaultValue": "83c3939e-dd12-44d3-a8ff-bf3cf1515c12"
     },
     "repoUrl": {
       "type": "string"
