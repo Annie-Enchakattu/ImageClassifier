@@ -5,20 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
-
     <style>
-        h5 {
-            color: slategray !important;
+        h5{
+            color:gray;
+            margin-top: 50px;
         }
-
         .navbar {
             border: currentColor;
             border-image: none;
             background-color: rgb(67, 175, 92);
             margin-bottom: 50px
+        }
+
+        .navbar-fixed-top {
+            box-shadow: 1px 1px 1px 2px lightgrey;
+            border: currentColor;
+            border-image: none;
+            background-color: rgb(67, 175, 92);
+            margin-bottom: 50px;
         }
 
         .main-menu-item {
@@ -27,15 +35,18 @@
         }
 
         .image-container {
-            -webkit-box-shadow: 2px 2px 2px 2px gainsboro;
-            -moz-box-shadow: 2px 2px 2px 2px gainsboro;
-            box-shadow: 2px 2px 2px 2px gainsboro;
+            -webkit-box-shadow: 1px 1px 1px 1px gainsboro;
+            -moz-box-shadow: 1px 1px 1px 1px gainsboro;
+            box-shadow: 1px 1px 1px 1px gainsboro;
             margin-bottom: 15px;
             padding: 8px;
+            font-size: 9pt;
+            border: solid 1px gainsboro;
+            cursor: pointer;
         }
 
         .btn-predict {
-            margin-top: 5px;
+            margin-top: 8px;
             width: 80%;
         }
 
@@ -43,55 +54,96 @@
             color: white !important;
             margin-right: 8px;
         }
+
         .sub-menu {
-            margin-right: 15px;
+            text-align: center;
+            padding-left: 20px;
+            padding-right: 0px;
+            height: 40px;
+            padding-bottom: 10px;
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            -ms-border-radius: 8px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border: solid 1px white;
+            margin-right: 7px;
         }
+
             .sub-menu a {
-                font-size: 16px;
-                border: solid 1px white;
-                height: 40px;
-                margin-top: 5px;
+                font-size: 14px !important;
+                color: white !important;
+                padding: 0;
                 padding-top: 10px !important;
+                margin-right: 8px;
+                outline: none;
             }
-        #sample-images {
-            margin-top: 45px;
+
+        .active-menu {
+            background-color: green;
         }
+
+        #images {
+            margin-top: 10px;
+        }
+
         #predictionModal {
-            text-align:center;
+            text-align: center;
         }
-        #prediction-table  {
+
+        #prediction-table {
             box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
             width: 100%;
             color: dimgray;
             margin-top: 8px;
         }
-        td{
+
+        td {
             padding: 8px;
             border: solid 1px gainsboro;
-            text-align:left;
+            text-align: left;
         }
-        tr:hover{
+
+        tr:hover {
             background-color: whitesmoke;
         }
+
         .bar {
             background: orange;
             padding: 0 0.15rem;
             color: transparent;
         }
-        
+
         .modal {
             position: fixed;
             left: 50% !important;
             top: 50% !important;
             transform: translate(-50%, -50%);
-            overflow:hidden;
+            overflow: hidden;
         }
-        .img-thumbnail
-        {
+
+        .img-thumbnail {
             margin-bottom: 0;
         }
 
-      
+        #add-more-sample-images {
+            text-align: center;
+            max-height: 20px;
+            border-bottom: 5px solid green;
+            margin-bottom: 70px;
+        }
+
+        .arrow-down {
+            font-size: 48px !important;
+            color: green;
+            cursor: pointer;
+            margin-bottom: 15px;
+            margin-top: -5px;
+        }
+        .fa-chevron-circle-down
+        {
+            background-color:white;
+        }
     </style>
 </head>
 <body>
@@ -110,7 +162,7 @@
                 <div id="div_options">
                     <ul class="nav navbar-nav navbar-right">
                         <li class="predict active-menu sub-menu" id="predict"><a class="navbar-brand" href="/home">Sample Images</a></li>
-                        <li class="sub-menu" id="stats"><a class="navbar-brand " style="" href="javascript:void(0)" onclick="alert('under construction');">Upload Image</a></li>
+                        <li class="sub-menu" id="stats"><a class="navbar-brand" id="upload-image" style="" href="javascript:void(0)">Upload Image</a></li>
                     </ul>
                 </div>
             </div>

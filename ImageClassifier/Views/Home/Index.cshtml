@@ -1,6 +1,20 @@
-﻿<div class="row text-center text-lg-left" id="sample-images" style="display:none">
+﻿
+<div class="row upload-image" style="display:none">
+    <input type="file" name="file" id="image-file-input" accept="image/gif, image/jpeg, image/tiff, image/png" />
+    <input value="Submit" id="submit-image" onclick="PostFile()" />
+
+</div>
+
+<div class="row text-center text-lg-left">
+    <h5 id="imageName"></h5>
+</div>
+<div class="row text-center text-lg-left" id="images" style="display:none">
 </div>
 <div class="row text-center text-lg-left" id="prediction-result" style="display:none">
+</div>
+
+<div id="add-more-sample-images" style="display:none">
+    <i class="fa fa-chevron-circle-down arrow-down" onclick="GetSampleImages(4)"></i>
 </div>
 <!-- Modal -->
 <div id="predictionModal" class="modal fade" role="dialog">
@@ -12,7 +26,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Top 5 Predictions</h4>
             </div>
-            <div class="modal-body" >
+            <div class="modal-body">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -21,15 +35,65 @@
     </div>
 </div>
 <script>
+    var startIndex = 0;
+
     $(document).ready(function () {
-        GetSampleImages(0);
-        //$("#predictionModal").draggable({ handle: ".modal-header" });
+        GetSampleImages(8);
+
+        $('#add-more-sample-images').show();
+
+        $('#upload-image').on('click', function () {
+            $('#image-file-input').trigger('click');
+        });
+        $('#image-file-input').on('change', function () {
+            $('#submit-image').trigger('click');
+        });
+
 
     });
+    function PostFile() {
 
-    function GetSampleImages(startIndex) {
-        $("#sample-images").show();
-        $("#prediction-result").hide();
+        var data = new FormData();
+        var files = $("#image-file-input").get(0).files;
+
+        if (files.length > 0) { data.append("Image", files[0]); }
+        else {
+            common.showNotification('warning', 'Please select file to upload.', 'top', 'right');
+            return false;
+        }
+        var extension = $("#image-file-input").val().split('.').pop().toUpperCase();
+        if (extension != "JPG") {
+            common.showNotification('warning', 'Imvalid image file format. Only Jpeg files supported', 'top', 'right');
+            return false;
+        }
+        $('#image-file-input').val('');
+        $.ajax({
+            url: '/api/predictImage/GetPredictionOfFile',
+            type: "POST",
+            processData: false,
+            cache: false,
+            data: data, dataType: 'json',
+            contentType: false,
+            success: function (data) {
+                LoadPredictions(data);
+            },
+            error: function (er) { alert(er); }
+
+        });
+        return false;
+    }
+    function Guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+    }
+    function GetSampleImages(length) {
+        $('#images').show();
+        $('#prediction-result').hide();
 
         $.ajax({
             url: '/api/sampleimages',
@@ -37,9 +101,11 @@
             dataType: 'json',
             data: {
                 startIndex: startIndex,
+                length: length
             },
             success: function (data) {
                 LoadSampleImages(data);
+                startIndex = startIndex + length;
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log('An error occurred while retrieving sample images');
@@ -48,52 +114,73 @@
     }
     function LoadSampleImages(imageData) {
 
+        var html = '';
+        $('#imageName').text('');
         for (var i = 0; i < imageData.length; i++) {
-            CreateImageGalleryHtml();
-            $('.img-added').attr('src', imageData[i].URL);
-            $('.img-added').removeClass('img-added');
-            $('.species-name-added').html(imageData[i].Name);
-            $('.species-name-added').removeClass('species-name-added');
+
+            html += '<div class="col-lg-3 col-md-4 col-xs-6 image-top-container"> ' +
+                '<div class="image-container" data-class-name="' + imageData[i].ClassName + '" ' +
+                'data-species-name="' + imageData[i].SpeciesName + '" onclick="GetImagesForSpecies(this)" > ' +
+                '<img class="img-fluid img-thumbnail img-added" src="' + imageData[i].URL + '" alt="" /> ' +
+                '<h4 class="species-name-added" style = "color:#777777; font-size: 10pt; font: "Open Sans", Arial, sans-serif">'
+                + imageData[i].ClassName + ' - ' + imageData[i].SpeciesName + '</h4>' +
+                '</div ></div>';
+
         }
+        $('#images').append(html);
+        $('.img-added').parent().hide().fadeIn(1000);
+        $('.img-added').removeClass(".img-added");
+
+        scrollSmoothToBottom();
     }
-    function CreateImageGalleryHtml() {
+    function LoadAllImagesForSpecies(imageData) {
 
-        var html = '<div class="col-lg-3 col-md-4 col-xs-6 image-top-container"> ' +
-            '<div class="image-container"> ' +
-            '<a href= "#" class="d-block mb-4 h-100" > ' +
-            '<img class="img-fluid img-thumbnail img-added" src="http://placehold.it/400x300" alt="" /> ' +
-            '<h5 class="species-name-added"></h5>' +
-            '</a >' +
-            '<button type= "button" onclick="predict(this)" class="btn btn-predict" style= "font-size:9pt">Predict</button > ' +
-            '</div ></div>';
+        var html = '';
+        $('#images').css('margin-top', '25px');
+        $('#imageName').text(imageData[0].ClassName + ' - ' + imageData[0].SpeciesName);
+        for (var i = 0; i < imageData.length; i++) {
 
-        $("#sample-images").append(html);
+            html += '<div class="col-lg-3 col-md-4 col-xs-6 image-top-container"> ' +
+                '<div class="image-container" data-class-name="' + imageData[i].ClassName + '" ' +
+                'data-species-name="' + imageData[i].SpeciesName + '"> ' +
+                '<img class="img-fluid img-thumbnail" src="' + imageData[i].URL + '" alt="" /> ' +
+                '<button type="button" class="btn btn-predict" style="font-size:9pt" onclick="GetPrediction(this)">Predict</button > ' +
+                '</div ></div>';
+
+            $(".img-added").parent().hide().fadeIn(1000);
+            $("#add-more-sample-images").hide();
+        }
+        $("#images").html(html);
+
     }
-    function predict(element) {
+    function GetPrediction(el) {
 
-        var imagePath = $(element).prev().children().attr('src');
+        var imagePath = $(el).parent().children('img').attr('src');
 
         $.ajax({
-            type: 'POST',
-            url: '/api/sampleImages',
-            data: JSON.stringify(imagePath),
-            success: function (data)
-            {
+            type: 'GET',
+            url: '/api/predictImage/GetImagePrediction',
+            dataType: 'json',
+            data: {
+                imagePath: imagePath
+            },
+            success: function (data) {
                 LoadPredictions(data);
             },
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
         });
     }
-    function LoadPredictions(data)
-    {
+    function LoadPredictions(data) {
         var html = '<table id="prediction-table">';
-                    
-        for (var i = 0; i < data.length; i++)
-        {
+
+        for (var i = 0; i < data.length; i++) {
+            var width = data[i].Probability * 100;
+            if (data[i].PercentageProbability < 0) {
+                width = 0;
+            }
             html += '<tr><td>' + data[i].Tag + '</td>' +
-                    '<td><div class="bar" style="max-width:' + data[i].PercentageProbability + '%;">' + data[i].PercentageProbability + '</div></td>' +
-                    '<td>' + data[i].PercentageProbability + '%</tr > ';
+                '<td><div class="bar" style="max-width:' + width + '%;max-height: 20px">'
+                + data[i].PercentageProbability + '</div></td>' +
+                '<td>' + data[i].PercentageProbability + '%</tr > ';
         }
 
         html += "</table>";
@@ -101,7 +188,30 @@
         $(".modal-body").html(html);
         $("#predictionModal").modal();
         $('#predictionModal').css('height', 420);
-        //$('.modal-body').css('height', 420);
-        //$('#predictionModal').css('top', 0);
     }
+    function GetImagesForSpecies(el) {
+        var className = $(el).attr("data-class-name");
+        var speciesName = $(el).attr("data-species-name");
+
+        $.ajax({
+            url: '/api/sampleimages/GetAllImagesForSpecies',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                className: className,
+                speciesName: speciesName
+            },
+            success: function (data) {
+                LoadAllImagesForSpecies(data);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('An error occurred while retrieving images');
+            }
+        });
+    }
+
+    function scrollSmoothToBottom() {
+        $("html, body").animate({ scrollTop: $(document).height() + 20 }, 10);
+    }
+
 </script>

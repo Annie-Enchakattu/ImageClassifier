@@ -17,57 +17,55 @@ namespace ImageClassifier.Controllers
     public class SampleImagesController : ApiController
     {
         static List<ImageData> imageFilesData = new List<ImageData>();
-        public IEnumerable<ImageData> Get(int startIndex)
+        string rootPath = "/Images/INat/";
+
+        public IEnumerable<ImageData> Get(int startIndex, int length)
         {
             List<ImageData> sampleImages = new List<ImageData>();
-            if (imageFilesData == null 
+            if (imageFilesData == null
                 || imageFilesData.Count == 0)
             {
-                GetImageData();
+                GetSampleImages();
             }
-            for(int i = startIndex; i < (startIndex + 4); i++)
+            for (int i = startIndex; i < (startIndex + length); i++)
             {
                 sampleImages.Add(imageFilesData[i]);
             }
-            return imageFilesData;
+            return sampleImages;
         }
-        public List<PredictionData> Post([FromBody]string value)
+
+        public List<ImageData> GetAllImagesForSpecies(string className, string speciesName)
         {
-            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-PredictionKey"];
-            //var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-ProjectId"]);
-            
-            List<PredictionData> error = new List<PredictionData>();
-            try
+            string rootFolderPath = System.Web.HttpContext.Current.Server.MapPath(rootPath);
+            string directory = string.Concat(rootFolderPath, "\\", className, "\\", speciesName);
+            var images = new DirectoryInfo(directory).GetFiles();
+            List<ImageData> imagesData = new List<ImageData>();
+            foreach (var img in images)
             {
-                return PredictImage(System.Web.HttpContext.Current.Server.MapPath(value));
+                var imgData = new ImageData();
+                imgData.ClassName = className;
+                imgData.SpeciesName = speciesName;
+                imgData.URL = string.Concat("/Images/INat/", className, "/", speciesName + "/" + img.Name);
+                imagesData.Add(imgData);
             }
-            catch(Exception ex)
-            {
-                var p = new PredictionData();
-                p.Tag = "error" + ex.Message +"<br/>" + predictionKey;
-                p.PercentageProbability = predictionKey;
-                p.Probability = 0;
-                error.Add(p);
-                return error;
-            }
+            return imagesData;
         }
-        
-        private List<string> GetImages()
+        private void GetSampleImages()
         {
-           List<string> imageFiles = 
-                Directory.GetFiles(System.Web.HttpContext.Current.Server.MapPath("/Images")).ToList();
-           return imageFiles;
-        }
-        private void GetImageData()
-        {
-            var imageFiles = GetImages();
-            //var imageDataList = new List<ImageData>();
-            foreach(var path in imageFiles)
+            string rootFolderPath = System.Web.HttpContext.Current.Server.MapPath(rootPath);
+            var directories = new DirectoryInfo(rootFolderPath).GetDirectories();
+            foreach (var directory in directories)
             {
-                var d = new ImageData();
-                d.URL = String.Concat("/Images/", GetFileName(path));
-                d.Name = GetImageName(GetFileName(path));
-                imageFilesData.Add(d);
+                var subDirectories = directory.GetDirectories();
+                foreach (var subdirectory in subDirectories)
+                {
+                    var imgData = new ImageData();
+                    imgData.ClassName = directory.Name;
+                    imgData.SpeciesName = subdirectory.Name;
+                    var image = subdirectory.GetFiles().FirstOrDefault();
+                    imgData.URL = string.Concat("/Images/INat/", directory.Name,  "/" , subdirectory.Name ,  "/" , image.Name);
+                    imageFilesData.Add(imgData);
+                }
             }
         }
         private string GetImageName(string filename)
@@ -77,67 +75,10 @@ namespace ImageClassifier.Controllers
         }
         private string GetFileName(string path)
         {
-            var startIndex = path.LastIndexOf("\\")+1;
+            var startIndex = path.LastIndexOf("\\") + 1;
             string name = path.Substring(startIndex);
             return name;
         }
-        static byte[] GetImageAsByteArray(string imageFilePath)
-        {
-            FileStream fileStream = new FileStream(imageFilePath, FileMode.Open, FileAccess.Read);
-            BinaryReader binaryReader = new BinaryReader(fileStream);
-            return binaryReader.ReadBytes((int)fileStream.Length);
-        }
 
-        static async Task MakePredictionRequest(string imageFilePath)
-        {
-            var client = new HttpClient();
-
-            // Request headers - replace this example key with your valid subscription key.
-            client.DefaultRequestHeaders.Add("Prediction-Key", "65d6c49a72a14c0fb068ea8f30218e26");
-
-            // Prediction URL - replace this example URL with your valid prediction URL.
-            
-            string url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/faf45e97-218b-418c-8dc0-641e7ba3f535/image?iterationId=e89db699-c59f-4d27-a261-1e3ef5df181a";
-
-            HttpResponseMessage response;
-
-            // Request body. Try this sample with a locally stored image.
-            byte[] byteData = GetImageAsByteArray(imageFilePath);
-
-            using (var content = new ByteArrayContent(byteData))
-            {
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response = await client.PostAsync(url, content);
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
-        }
-
-        private static List<PredictionData> PredictImage(string path)
-        {
-            var predictionKey = System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-PredictionKey"];
-            //var predictionKey = "65d6c49a72a14c0fb068ea8f30218e26";
-            PredictionEndpointCredentials predictionEndpointCredentials = new PredictionEndpointCredentials(predictionKey);
-            PredictionEndpoint endpoint = new PredictionEndpoint(predictionEndpointCredentials);
-
-            FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-
-            //var projectId = new Guid("faf45e97-218b-418c-8dc0-641e7ba3f535");
-            var projectId = new Guid(System.Web.Configuration.WebConfigurationManager.AppSettings["CustomVisionAI-ProjectId"]);
-
-            var result = endpoint.PredictImage(projectId, fileStream);
-
-            var predictionDataList = new List<PredictionData>();
-            foreach (var c in result.Predictions)
-            {
-                var p = new PredictionData();
-                p.Tag = c.Tag;
-                var percentage = c.Probability * 100;
-                p.PercentageProbability = (c.Probability * 100).ToString();
-                p.Probability = c.Probability;
-                predictionDataList.Add(p);
-            }
-
-            return predictionDataList.OrderByDescending(p => p.Probability).Take(5).ToList();
-        }
     }
 }

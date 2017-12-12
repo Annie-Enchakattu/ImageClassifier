@@ -8,6 +8,7 @@ namespace ImageClassifier.Models
     public class ImageData
     {
         public string URL;
-        public string Name;
+        public string SpeciesName;
+        public string ClassName;
     }
 }
